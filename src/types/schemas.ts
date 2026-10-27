@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { KeyCheck, ShareLink, VaultItemCipher, VaultItemPlain, SessionUser } from './index'
+import type { KeyCheck, PublicShare, ShareLink, ShareSummary, VaultItemCipher, VaultItemPlain, SessionUser } from './index'
 
 const isoDate = z.iso.datetime({ offset: true })
 const base64 = z.string().min(1).regex(/^[A-Za-z0-9+/_-]+={0,2}$/, 'Expected base64 or base64url')
@@ -42,6 +42,18 @@ export const shareLinkSchema = z.object({
   revokedAt: isoDate.nullable(),
 }) satisfies z.ZodType<ShareLink>
 
+export const shareSummarySchema = z.object({
+  id: z.uuid(),
+  itemId: z.uuid(),
+  expiresAt: isoDate,
+}) satisfies z.ZodType<ShareSummary>
+
+export const publicShareSchema = z.object({
+  ciphertext: base64,
+  iv: base64,
+  expiresAt: isoDate,
+}) satisfies z.ZodType<PublicShare>
+
 // Request bodies. Note there is no plaintext field anywhere: the server only sees ciphertext.
 
 export const registerRequestSchema = z.object({
@@ -64,11 +76,15 @@ export const updateVaultItemRequestSchema = z.object({
 /** The client picks the id because it is bound into the ciphertext as authenticated data. */
 export const createVaultItemRequestSchema = updateVaultItemRequestSchema.extend({ id: z.uuid() })
 
+export const MAX_SHARE_TTL_SECONDS = 30 * 24 * 60 * 60
+
+/** The client picks the share id (bound into the ciphertext); the server sets the expiry from its own clock. */
 export const createShareLinkRequestSchema = z.object({
+  id: z.uuid(),
   itemId: z.uuid(),
   ciphertext: base64.max(200_000),
   iv: base64.max(64),
-  expiresAt: isoDate,
+  ttlSeconds: z.number().int().min(60).max(MAX_SHARE_TTL_SECONDS),
 })
 
 export type RegisterRequest = z.infer<typeof registerRequestSchema>

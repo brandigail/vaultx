@@ -1,5 +1,6 @@
 export { DecryptionError, open, seal, type Sealed } from './aes'
-export { fromBase64, toBase64 } from './encoding'
+export { fromBase64, fromBase64Url, toBase64, toBase64Url } from './encoding'
 export { createKeyCheck, verifyKeyCheck } from './keycheck'
 export { deriveKey, generateSalt, PBKDF2_ITERATIONS } from './kdf'
 export { decryptItem, encryptItem } from './vault'
+export { createShareKey, decryptShare, encryptShare, importShareKey, InvalidShareKeyError } from './share'

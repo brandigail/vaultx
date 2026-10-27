@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   createShareLinkRequestSchema,
+  MAX_SHARE_TTL_SECONDS,
   registerRequestSchema,
   createVaultItemRequestSchema,
   vaultItemPlainSchema,
@@ -27,9 +28,14 @@ describe('schemas', () => {
     expect(parsed).toEqual({ id, ciphertext: 'abc', iv: 'def' })
   })
 
-  it('requires an ISO expiry on share links', () => {
-    const base = { itemId: crypto.randomUUID(), ciphertext: 'abc', iv: 'def' }
-    expect(createShareLinkRequestSchema.safeParse({ ...base, expiresAt: '2026-12-01T00:00:00Z' }).success).toBe(true)
-    expect(createShareLinkRequestSchema.safeParse({ ...base, expiresAt: 'tomorrow' }).success).toBe(false)
+  it('bounds the share link lifetime and ignores a client-supplied expiry timestamp', () => {
+    const base = { id: crypto.randomUUID(), itemId: crypto.randomUUID(), ciphertext: 'abc', iv: 'def' }
+    expect(createShareLinkRequestSchema.safeParse({ ...base, ttlSeconds: 3600 }).success).toBe(true)
+    expect(createShareLinkRequestSchema.safeParse({ ...base, ttlSeconds: 59 }).success).toBe(false)
+    expect(createShareLinkRequestSchema.safeParse({ ...base, ttlSeconds: MAX_SHARE_TTL_SECONDS + 1 }).success).toBe(false)
+    expect(createShareLinkRequestSchema.safeParse({ ...base, ttlSeconds: 1.5 }).success).toBe(false)
+    expect(createShareLinkRequestSchema.safeParse(base).success).toBe(false)
+    const parsed = createShareLinkRequestSchema.parse({ ...base, ttlSeconds: 3600, expiresAt: '2099-01-01T00:00:00Z' })
+    expect('expiresAt' in parsed).toBe(false)
   })
 })

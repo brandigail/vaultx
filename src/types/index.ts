@@ -43,3 +43,9 @@ export interface ShareLink {
   expiresAt: string
   revokedAt: string | null
 }
+
+/** A live share as its owner sees it. The key exists only inside the link itself, so it is never listed. */
+export type ShareSummary = Pick<ShareLink, 'id' | 'itemId' | 'expiresAt'>
+
+/** What the public endpoint serves to anyone holding the link. */
+export type PublicShare = Pick<ShareLink, 'ciphertext' | 'iv' | 'expiresAt'>

@@ -10,7 +10,7 @@
 - [x] 8. Vault list/detail UI, search, copy with auto-clear
 - [x] 9. Password generator and strength meter
 - [x] 10. HIBP k-anonymity breach indicator
-- [ ] 11. Time-limited share links with expiry and revoke
+- [x] 11. Time-limited share links with expiry and revoke
 - [ ] 12. Demo account and seeded encrypted sample items
 - [ ] 13. Security review: no plaintext in network tab, logs or storage
 - [ ] 14. Quality gate: `npm run build`, lint and `tsc --noEmit` all pass; no console errors; core flow tested at 375px and desktop
