@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { Button } from '../../components/Button'
+import { BreachCheck } from '../breach/BreachCheck'
 import { CLIPBOARD_CLEAR_MS, copyWithAutoClear } from './clipboard'
 import { KIND_LABEL, SECRET_LABEL } from './kinds'
 import type { VaultEntry } from './useVaultItems'
@@ -120,6 +121,7 @@ export function ItemDetail({ entry, onEdit, onDelete }: ItemDetailProps) {
           {revealed ? `Hide ${SECRET_LABEL[kind].toLowerCase()}` : `Reveal ${SECRET_LABEL[kind].toLowerCase()}`}
         </Button>
       </div>
+      {kind === 'LOGIN' && <BreachCheck password={secret} />}
       <p role="status" aria-live="polite" className="min-h-5 text-sm text-slate-600 dark:text-slate-400">
         {message}
       </p>

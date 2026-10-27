@@ -9,7 +9,7 @@
 - [x] 7. Vault CRUD functions storing ciphertext only
 - [x] 8. Vault list/detail UI, search, copy with auto-clear
 - [x] 9. Password generator and strength meter
-- [ ] 10. HIBP k-anonymity breach indicator
+- [x] 10. HIBP k-anonymity breach indicator
 - [ ] 11. Time-limited share links with expiry and revoke
 - [ ] 12. Demo account and seeded encrypted sample items
 - [ ] 13. Security review: no plaintext in network tab, logs or storage

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '../../components/Button'
 import { Field } from '../../components/Field'
 import type { VaultItemKind, VaultItemPlain } from '../../types'
+import { BreachCheck } from '../breach/BreachCheck'
 import { GeneratorPanel } from '../generator/GeneratorPanel'
 import { StrengthMeter } from '../generator/StrengthMeter'
 import { KIND_LABEL, KINDS, SECRET_LABEL } from './kinds'
@@ -102,7 +103,12 @@ export function ItemForm({ initial, onSave, onCancel }: ItemFormProps) {
             </Button>
           </div>
         )}
-        {kind === 'LOGIN' && <StrengthMeter password={secret} />}
+        {kind === 'LOGIN' && (
+          <>
+            <StrengthMeter password={secret} />
+            <BreachCheck password={secret} />
+          </>
+        )}
       </div>
       {generating && kind !== 'NOTE' && (
         <GeneratorPanel
