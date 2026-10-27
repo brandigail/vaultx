@@ -1,13 +1,20 @@
+/** A known marker encrypted with the master-passphrase key, used to verify the passphrase on unlock. */
+export interface KeyCheck {
+  ciphertext: string
+  iv: string
+}
+
 export interface User {
   id: string
   email: string
   passwordHash: string
   kdfSalt: string
+  keyCheck: KeyCheck
   createdAt: string
 }
 
 /** What the server may return to the client: never the password hash. */
-export type SessionUser = Pick<User, 'id' | 'email' | 'kdfSalt'>
+export type SessionUser = Pick<User, 'id' | 'email' | 'kdfSalt' | 'keyCheck'>
 
 export interface VaultItemCipher {
   id: string

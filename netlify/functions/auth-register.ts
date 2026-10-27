@@ -6,8 +6,8 @@ import { sessionCookie, signSession } from '../lib/session'
 import { createUser, normalizeEmail, toSessionUser } from '../lib/users'
 
 export default handle(async (req) => {
-  const { email, password, kdfSalt } = await readJson(req, registerRequestSchema)
-  const user = await createUser(normalizeEmail(email), await hashPassword(password), kdfSalt)
+  const { email, password, kdfSalt, keyCheck } = await readJson(req, registerRequestSchema)
+  const user = await createUser(normalizeEmail(email), await hashPassword(password), kdfSalt, keyCheck)
   if (!user) throw new HttpError(409, 'An account with that email already exists')
   const token = await signSession(user.id)
   return json({ user: toSessionUser(user) }, 201, { 'Set-Cookie': sessionCookie(req, token) })

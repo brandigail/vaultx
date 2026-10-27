@@ -13,7 +13,8 @@ describe('schemas', () => {
   })
 
   it('rejects a weak account password and bad email on register', () => {
-    const ok = { email: 'a@b.co', password: 'longenough1', kdfSalt: 'c2FsdA==' }
+    const keyCheck = { ciphertext: 'Y2lwaGVy', iv: 'aXY=' }
+    const ok = { email: 'a@b.co', password: 'longenough1', kdfSalt: 'c2FsdA==', keyCheck }
     expect(registerRequestSchema.safeParse(ok).success).toBe(true)
     expect(registerRequestSchema.safeParse({ ...ok, password: 'short' }).success).toBe(false)
     expect(registerRequestSchema.safeParse({ ...ok, email: 'nope' }).success).toBe(false)

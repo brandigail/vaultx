@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { ShareLink, VaultItemCipher, VaultItemPlain, SessionUser } from './index'
+import type { KeyCheck, ShareLink, VaultItemCipher, VaultItemPlain, SessionUser } from './index'
 
 const isoDate = z.iso.datetime({ offset: true })
 const base64 = z.string().min(1).regex(/^[A-Za-z0-9+/_-]+={0,2}$/, 'Expected base64 or base64url')
@@ -13,10 +13,16 @@ export const vaultItemPlainSchema = z.object({
   notes: z.string().max(10_000).optional(),
 }) satisfies z.ZodType<VaultItemPlain>
 
+export const keyCheckSchema = z.object({
+  ciphertext: base64.max(1024),
+  iv: base64.max(64),
+}) satisfies z.ZodType<KeyCheck>
+
 export const sessionUserSchema = z.object({
   id: z.uuid(),
   email: z.email(),
   kdfSalt: base64,
+  keyCheck: keyCheckSchema,
 }) satisfies z.ZodType<SessionUser>
 
 export const vaultItemCipherSchema = z.object({
@@ -42,6 +48,7 @@ export const registerRequestSchema = z.object({
   email: z.email().max(320),
   password: z.string().min(10).max(256),
   kdfSalt: base64,
+  keyCheck: keyCheckSchema,
 })
 
 export const loginRequestSchema = z.object({

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import type { VaultItemPlain } from '../types'
-import { DecryptionError, decryptItem, deriveKey, encryptItem, fromBase64, generateSalt, open, seal, toBase64 } from './index'
+import { DecryptionError, createKeyCheck, verifyKeyCheck, decryptItem, deriveKey, encryptItem, fromBase64, generateSalt, open, seal, toBase64 } from './index'
 
 // Low iteration count keeps the suite fast; the production default is exercised once below.
 const ITERATIONS = 1_000
@@ -128,5 +128,22 @@ describe('vault items', () => {
     const id = crypto.randomUUID()
     const bogus = await seal(key, JSON.stringify({ title: 'x', kind: 'NOPE' }), id)
     await expect(decryptItem(key, id, bogus)).rejects.toThrow()
+  })
+})
+
+describe('key check', () => {
+  it('accepts the right key and rejects a wrong one', async () => {
+    const salt = generateSalt()
+    const key = await deriveKey('right', salt, ITERATIONS)
+    const check = await createKeyCheck(key)
+    expect(await verifyKeyCheck(await deriveKey('right', salt, ITERATIONS), check)).toBe(true)
+    expect(await verifyKeyCheck(await deriveKey('wrong', salt, ITERATIONS), check)).toBe(false)
+  })
+
+  it('is not a valid vault item and rejects tampering', async () => {
+    const key = await deriveKey('pw', generateSalt(), ITERATIONS)
+    const check = await createKeyCheck(key)
+    expect(await verifyKeyCheck(key, { ...check, ciphertext: flipByte(check.ciphertext) })).toBe(false)
+    await expect(decryptItem(key, 'key-check', check)).rejects.toThrow()
   })
 })

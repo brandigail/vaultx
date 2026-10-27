@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import { afterAll, describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { generateSalt } from '../../src/crypto'
+import { createKeyCheck, deriveKey, generateSalt } from '../../src/crypto'
 import { sessionUserSchema } from '../../src/types/schemas'
 import login from './auth-login'
 import logout from './auth-logout'
@@ -12,6 +12,7 @@ const enabled = Boolean(process.env.DATABASE_URL && process.env.JWT_SECRET)
 const email = `Test-${crypto.randomUUID()}@Example.test`
 const password = 'a-long-enough-password'
 const kdfSalt = generateSalt()
+const keyCheck = await createKeyCheck(await deriveKey('master passphrase', kdfSalt, 1_000))
 
 function post(path: string, body: unknown, headers: Record<string, string> = {}): Request {
   return new Request(`http://localhost${path}`, {
@@ -33,13 +34,13 @@ describe.skipIf(!enabled)('auth functions (Neon integration)', () => {
   })
 
   it('registers, sets an HttpOnly session cookie and returns no password hash', async () => {
-    const res = await register(post('/api/auth/register', { email, password, kdfSalt }))
+    const res = await register(post('/api/auth/register', { email, password, kdfSalt, keyCheck }))
     expect(res.status).toBe(201)
     const setCookie = res.headers.get('set-cookie') ?? ''
     expect(setCookie).toContain('HttpOnly')
     expect(setCookie).toContain('SameSite=Strict')
     const body = userBody.parse(await res.json())
-    expect(body.user).toEqual({ id: expect.any(String), email: email.toLowerCase(), kdfSalt })
+    expect(body.user).toEqual({ id: expect.any(String), email: email.toLowerCase(), kdfSalt, keyCheck })
     expect(JSON.stringify(body)).not.toMatch(/hash|\$2[aby]\$/i)
   })
 
@@ -53,12 +54,12 @@ describe.skipIf(!enabled)('auth functions (Neon integration)', () => {
   })
 
   it('rejects a duplicate email regardless of case', async () => {
-    const res = await register(post('/api/auth/register', { email: email.toUpperCase(), password, kdfSalt }))
+    const res = await register(post('/api/auth/register', { email: email.toUpperCase(), password, kdfSalt, keyCheck }))
     expect(res.status).toBe(409)
   })
 
   it('rejects weak passwords, bad bodies and non-JSON content', async () => {
-    expect((await register(post('/api/auth/register', { email: 'x@y.test', password: 'short', kdfSalt }))).status).toBe(400)
+    expect((await register(post('/api/auth/register', { email: 'x@y.test', password: 'short', kdfSalt, keyCheck }))).status).toBe(400)
     expect((await register(post('/api/auth/register', { nope: true }))).status).toBe(400)
     const form = new Request('http://localhost/api/auth/register', {
       method: 'POST',
