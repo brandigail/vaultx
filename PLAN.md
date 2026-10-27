@@ -6,7 +6,7 @@
 - [x] 4. Crypto module: key derivation, AES-GCM encrypt/decrypt, with unit tests
 - [x] 5. Account auth functions (register, login, logout) with hashed passwords
 - [x] 6. Unlock screen and in-memory key session with auto-lock
-- [ ] 7. Vault CRUD functions storing ciphertext only
+- [x] 7. Vault CRUD functions storing ciphertext only
 - [ ] 8. Vault list/detail UI, search, copy with auto-clear
 - [ ] 9. Password generator and strength meter
 - [ ] 10. HIBP k-anonymity breach indicator

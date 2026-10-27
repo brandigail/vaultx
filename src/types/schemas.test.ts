@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   createShareLinkRequestSchema,
   registerRequestSchema,
-  upsertVaultItemRequestSchema,
+  createVaultItemRequestSchema,
   vaultItemPlainSchema,
 } from './schemas'
 
@@ -21,9 +21,10 @@ describe('schemas', () => {
   })
 
   it('requires ciphertext and iv, and strips unexpected plaintext fields', () => {
-    expect(upsertVaultItemRequestSchema.safeParse({ ciphertext: 'abc' }).success).toBe(false)
-    const parsed = upsertVaultItemRequestSchema.parse({ ciphertext: 'abc', iv: 'def', secret: 'hunter2' })
-    expect(parsed).toEqual({ ciphertext: 'abc', iv: 'def' })
+    const id = crypto.randomUUID()
+    expect(createVaultItemRequestSchema.safeParse({ id, ciphertext: 'abc' }).success).toBe(false)
+    const parsed = createVaultItemRequestSchema.parse({ id, ciphertext: 'abc', iv: 'def', secret: 'hunter2' })
+    expect(parsed).toEqual({ id, ciphertext: 'abc', iv: 'def' })
   })
 
   it('requires an ISO expiry on share links', () => {

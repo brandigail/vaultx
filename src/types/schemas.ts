@@ -56,10 +56,13 @@ export const loginRequestSchema = z.object({
   password: z.string().min(1).max(256),
 })
 
-export const upsertVaultItemRequestSchema = z.object({
+export const updateVaultItemRequestSchema = z.object({
   ciphertext: base64.max(200_000),
   iv: base64.max(64),
 })
+
+/** The client picks the id because it is bound into the ciphertext as authenticated data. */
+export const createVaultItemRequestSchema = updateVaultItemRequestSchema.extend({ id: z.uuid() })
 
 export const createShareLinkRequestSchema = z.object({
   itemId: z.uuid(),
@@ -70,5 +73,6 @@ export const createShareLinkRequestSchema = z.object({
 
 export type RegisterRequest = z.infer<typeof registerRequestSchema>
 export type LoginRequest = z.infer<typeof loginRequestSchema>
-export type UpsertVaultItemRequest = z.infer<typeof upsertVaultItemRequestSchema>
+export type CreateVaultItemRequest = z.infer<typeof createVaultItemRequestSchema>
+export type UpdateVaultItemRequest = z.infer<typeof updateVaultItemRequestSchema>
 export type CreateShareLinkRequest = z.infer<typeof createShareLinkRequestSchema>
