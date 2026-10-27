@@ -7,7 +7,7 @@
 - [x] 5. Account auth functions (register, login, logout) with hashed passwords
 - [x] 6. Unlock screen and in-memory key session with auto-lock
 - [x] 7. Vault CRUD functions storing ciphertext only
-- [ ] 8. Vault list/detail UI, search, copy with auto-clear
+- [x] 8. Vault list/detail UI, search, copy with auto-clear
 - [ ] 9. Password generator and strength meter
 - [ ] 10. HIBP k-anonymity breach indicator
 - [ ] 11. Time-limited share links with expiry and revoke

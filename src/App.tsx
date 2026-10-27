@@ -14,6 +14,6 @@ export default function App() {
     case 'locked':
       return <UnlockScreen email={state.user.email} />
     case 'unlocked':
-      return <VaultHome email={state.user.email} />
+      return <VaultHome email={state.user.email} vaultKey={state.key} />
   }
 }

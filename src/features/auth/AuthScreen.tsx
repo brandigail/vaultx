@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { AuthLayout } from '../../components/AuthLayout'
 import { Field } from '../../components/Field'
 import { SubmitButton } from '../../components/SubmitButton'
-import { ApiError } from './api'
+import { ApiError } from '../../lib/api'
 import { useSession } from './useSession'
 
 const MIN_PASSPHRASE = 12
