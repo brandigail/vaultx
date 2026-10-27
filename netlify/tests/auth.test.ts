@@ -3,10 +3,10 @@ import { afterAll, describe, expect, it } from 'vitest'
 import { z } from 'zod'
 import { createKeyCheck, deriveKey, generateSalt } from '../../src/crypto'
 import { sessionUserSchema } from '../../src/types/schemas'
-import login from './auth-login'
-import logout from './auth-logout'
-import me from './auth-me'
-import register from './auth-register'
+import login from '../functions/auth-login'
+import logout from '../functions/auth-logout'
+import me from '../functions/auth-me'
+import register from '../functions/auth-register'
 
 const enabled = Boolean(process.env.DATABASE_URL && process.env.JWT_SECRET)
 const email = `Test-${crypto.randomUUID()}@Example.test`
@@ -87,9 +87,12 @@ describe.skipIf(!enabled)('auth functions (Neon integration)', () => {
     expect(authed.status).toBe(200)
     expect(userBody.parse(await authed.json()).user.email).toBe(email.toLowerCase())
 
-    expect((await me(new Request('http://localhost/api/auth/me'))).status).toBe(401)
+    const anonymous = await me(new Request('http://localhost/api/auth/me'))
+    expect(anonymous.status).toBe(200)
+    expect(await anonymous.json()).toEqual({ user: null })
     const forged = `${session.slice(0, -3)}abc`
-    expect((await me(new Request('http://localhost/api/auth/me', { headers: { cookie: forged } }))).status).toBe(401)
+    const forgedRes = await me(new Request('http://localhost/api/auth/me', { headers: { cookie: forged } }))
+    expect(await forgedRes.json()).toEqual({ user: null })
   })
 
   it('logout clears the cookie', async () => {

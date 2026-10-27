@@ -5,7 +5,10 @@
 
 [dev]
   command = "npm run dev:vite"
-  targetPort = 5173
+  port = 8903
+  targetPort = 5303
+  framework = "#custom"
+  autoLaunch = false
 
 [[redirects]]
   from = "/api/*"
@@ -23,4 +26,3 @@
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
     Referrer-Policy = "no-referrer"
-    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://api.pwnedpasswords.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'"
