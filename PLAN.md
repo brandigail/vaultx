@@ -1,6 +1,6 @@
 # VaultX: Build Plan
 
-- [ ] 1. Scaffold the project (stack in `CLAUDE.md`), strict `tsconfig`, lint, `netlify.toml`, `.env.example`; first working commit
+- [x] 1. Scaffold the project (stack in `CLAUDE.md`), strict `tsconfig`, lint, `netlify.toml`, `.env.example`; first working commit
 - [ ] 2. Neon schema (users, vault_items, share_links) and migration
 - [ ] 3. `types/` interfaces and zod schemas
 - [ ] 4. Crypto module: key derivation, AES-GCM encrypt/decrypt, with unit tests
