@@ -2,7 +2,7 @@
 
 - [x] 1. Scaffold the project (stack in `CLAUDE.md`), strict `tsconfig`, lint, `netlify.toml`, `.env.example`; first working commit
 - [x] 2. Neon schema (users, vault_items, share_links) and migration
-- [ ] 3. `types/` interfaces and zod schemas
+- [x] 3. `types/` interfaces and zod schemas
 - [ ] 4. Crypto module: key derivation, AES-GCM encrypt/decrypt, with unit tests
 - [ ] 5. Account auth functions (register, login, logout) with hashed passwords
 - [ ] 6. Unlock screen and in-memory key session with auto-lock
