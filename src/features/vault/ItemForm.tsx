@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '../../components/Button'
 import { Field } from '../../components/Field'
 import type { VaultItemKind, VaultItemPlain } from '../../types'
+import { GeneratorPanel } from '../generator/GeneratorPanel'
+import { StrengthMeter } from '../generator/StrengthMeter'
 import { KIND_LABEL, KINDS, SECRET_LABEL } from './kinds'
 
 interface ItemFormProps {
@@ -20,7 +22,9 @@ function optional(value: FormDataEntryValue | null): string | undefined {
 
 export function ItemForm({ initial, onSave, onCancel }: ItemFormProps) {
   const [kind, setKind] = useState<VaultItemKind>(initial?.kind ?? 'LOGIN')
+  const [secret, setSecret] = useState(initial?.secret ?? '')
   const [showSecret, setShowSecret] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -51,7 +55,7 @@ export function ItemForm({ initial, onSave, onCancel }: ItemFormProps) {
         <label htmlFor="kind" className="block text-sm font-medium">
           Type
         </label>
-        <select id="kind" value={kind} onChange={(e) => setKind(e.target.value as VaultItemKind)} className={INPUT}>
+        <select id="kind" value={kind} onChange={(e) => setKind(e.target.value as VaultItemKind)} className={`${INPUT} cursor-pointer`}>
           {KINDS.map((k) => (
             <option key={k} value={k}>
               {KIND_LABEL[k]}
@@ -68,25 +72,48 @@ export function ItemForm({ initial, onSave, onCancel }: ItemFormProps) {
           {SECRET_LABEL[kind]}
         </label>
         {kind === 'NOTE' ? (
-          <textarea id="secret" name="secret" rows={6} defaultValue={initial?.secret} required className={INPUT} />
+          <textarea
+            id="secret"
+            name="secret"
+            rows={6}
+            value={secret}
+            onChange={(e) => setSecret(e.target.value)}
+            required
+            className={INPUT}
+          />
         ) : (
           <div className="flex gap-2">
             <input
               id="secret"
               name="secret"
               type={showSecret ? 'text' : 'password'}
-              defaultValue={initial?.secret}
+              value={secret}
+              onChange={(e) => setSecret(e.target.value)}
               autoComplete="off"
               spellCheck={false}
               required
-              className={`${INPUT} font-mono`}
+              className={`${INPUT} min-w-0 font-mono`}
             />
             <Button onClick={() => setShowSecret((s) => !s)} aria-pressed={showSecret}>
               {showSecret ? 'Hide' : 'Show'}
             </Button>
+            <Button onClick={() => setGenerating((g) => !g)} aria-expanded={generating}>
+              Generate
+            </Button>
           </div>
         )}
+        {kind === 'LOGIN' && <StrengthMeter password={secret} />}
       </div>
+      {generating && kind !== 'NOTE' && (
+        <GeneratorPanel
+          onUse={(password) => {
+            setSecret(password)
+            setShowSecret(true)
+            setGenerating(false)
+          }}
+          onClose={() => setGenerating(false)}
+        />
+      )}
       {kind !== 'NOTE' && (
         <>
           <Field label="Website URL" name="url" type="url" defaultValue={initial?.url} placeholder="https://" />

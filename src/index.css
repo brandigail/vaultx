@@ -12,4 +12,16 @@
   body {
     @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100;
   }
+  /* Tailwind's preflight resets buttons to the default arrow; restore the pointer on anything clickable. */
+  button:not(:disabled),
+  select,
+  summary,
+  [role="button"],
+  input:is([type="checkbox"], [type="radio"], [type="range"]):not(:disabled) {
+    cursor: pointer;
+  }
+  button:disabled,
+  input:disabled {
+    cursor: not-allowed;
+  }
 }

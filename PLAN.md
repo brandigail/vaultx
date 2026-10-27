@@ -8,7 +8,7 @@
 - [x] 6. Unlock screen and in-memory key session with auto-lock
 - [x] 7. Vault CRUD functions storing ciphertext only
 - [x] 8. Vault list/detail UI, search, copy with auto-clear
-- [ ] 9. Password generator and strength meter
+- [x] 9. Password generator and strength meter
 - [ ] 10. HIBP k-anonymity breach indicator
 - [ ] 11. Time-limited share links with expiry and revoke
 - [ ] 12. Demo account and seeded encrypted sample items
