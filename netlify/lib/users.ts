@@ -1,5 +1,6 @@
 import { neon } from '@neondatabase/serverless'
 import { z } from 'zod'
+import { DEMO_EMAIL_DOMAIN, DEMO_TTL_HOURS } from '../../src/lib/demo'
 import type { KeyCheck, SessionUser, User } from '../../src/types'
 import { databaseUrl } from './env'
 
@@ -51,6 +52,15 @@ export async function createUser(
     [email, passwordHash, kdfSalt, keyCheck.ciphertext, keyCheck.iv],
   )
   return rows[0] ? toAuthRow(rows[0]) : null
+}
+
+/** Deletes demo accounts past their lifetime. Items and shares go with them (ON DELETE CASCADE). */
+export async function purgeExpiredDemoUsers(): Promise<number> {
+  const rows = await neon(databaseUrl()).query(
+    `DELETE FROM users WHERE email LIKE $1 AND created_at < now() - make_interval(hours => $2::int) RETURNING id`,
+    [`%@${DEMO_EMAIL_DOMAIN}`, DEMO_TTL_HOURS],
+  )
+  return rows.length
 }
 
 export async function findUserByEmail(email: string): Promise<UserAuthRow | null> {

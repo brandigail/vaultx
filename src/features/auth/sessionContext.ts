@@ -14,6 +14,8 @@ export type SessionState =
 export interface SessionApi {
   state: SessionState
   register: (email: string, password: string, passphrase: string) => Promise<void>
+  /** Creates a throwaway account with sample items and unlocks it. No sign-up needed. */
+  startDemo: () => Promise<void>
   login: (email: string, password: string) => Promise<void>
   /** Throws `WrongPassphraseError` if the passphrase is incorrect. */
   unlock: (passphrase: string) => Promise<void>

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { createKeyCheck, deriveKey, generateSalt, verifyKeyCheck } from '../../crypto'
+import { createKeyCheck, deriveKey, generateSalt, toBase64Url, verifyKeyCheck } from '../../crypto'
+import { DEMO_PASSPHRASE, demoEmail } from '../../lib/demo'
+import { seedDemoVault } from '../demo/seed'
 import { authApi } from './api'
 import { SessionContext, WrongPassphraseError, type SessionApi, type SessionState } from './sessionContext'
 
@@ -21,6 +23,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const kdfSalt = generateSalt()
     const key = await deriveKey(passphrase, kdfSalt)
     const user = await authApi.register({ email, password, kdfSalt, keyCheck: await createKeyCheck(key) })
+    setState({ status: 'unlocked', user, key })
+  }, [])
+
+  const startDemo = useCallback<SessionApi['startDemo']>(async () => {
+    const kdfSalt = generateSalt()
+    const key = await deriveKey(DEMO_PASSPHRASE, kdfSalt)
+    // The account password is random and never shown: a demo visitor unlocks with the public passphrase.
+    const password = toBase64Url(crypto.getRandomValues(new Uint8Array(24)))
+    const user = await authApi.register({ email: demoEmail(), password, kdfSalt, keyCheck: await createKeyCheck(key) })
+    await seedDemoVault(key)
     setState({ status: 'unlocked', user, key })
   }, [])
 
@@ -49,8 +61,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const api = useMemo<SessionApi>(
-    () => ({ state, register, login, unlock, lock, logout }),
-    [state, register, login, unlock, lock, logout],
+    () => ({ state, register, startDemo, login, unlock, lock, logout }),
+    [state, register, startDemo, login, unlock, lock, logout],
   )
   return <SessionContext.Provider value={api}>{children}</SessionContext.Provider>
 }

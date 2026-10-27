@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { AuthLayout } from '../../components/AuthLayout'
 import { Field } from '../../components/Field'
 import { SubmitButton } from '../../components/SubmitButton'
+import { DEMO_PASSPHRASE, isDemoEmail } from '../../lib/demo'
 import { WrongPassphraseError } from './sessionContext'
 import { useSession } from './useSession'
 
@@ -26,7 +27,15 @@ export function UnlockScreen({ email }: { email: string }) {
   return (
     <AuthLayout title="Vault locked" subtitle={`Enter your master passphrase to unlock ${email}.`}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <Field label="Master passphrase" name="passphrase" type="password" autoComplete="off" autoFocus required />
+        <Field
+          label="Master passphrase"
+          name="passphrase"
+          type="password"
+          autoComplete="off"
+          hint={isDemoEmail(email) ? `Demo vault: the passphrase is ${DEMO_PASSPHRASE}` : undefined}
+          autoFocus
+          required
+        />
         {error && (
           <p role="alert" className="text-sm text-red-600 dark:text-red-400">
             {error}

@@ -1,17 +1,31 @@
 import { useState, type FormEvent } from 'react'
 import { AuthLayout } from '../../components/AuthLayout'
+import { Button } from '../../components/Button'
 import { Field } from '../../components/Field'
 import { SubmitButton } from '../../components/SubmitButton'
 import { ApiError } from '../../lib/api'
+import { DEMO_TTL_HOURS } from '../../lib/demo'
 import { useSession } from './useSession'
 
 const MIN_PASSPHRASE = 12
 
 export function AuthScreen() {
-  const { register, login } = useSession()
+  const { register, login, startDemo } = useSession()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [demoBusy, setDemoBusy] = useState(false)
+
+  const tryDemo = async () => {
+    setError(null)
+    setDemoBusy(true)
+    try {
+      await startDemo()
+    } catch {
+      setError('Could not create the demo vault. Please try again.')
+      setDemoBusy(false)
+    }
+  }
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -74,7 +88,7 @@ export function AuthScreen() {
             {error}
           </p>
         )}
-        <SubmitButton busy={busy}>{busy ? 'Please wait…' : registering ? 'Create account' : 'Sign in'}</SubmitButton>
+        <SubmitButton busy={busy || demoBusy}>{busy ? 'Please wait…' : registering ? 'Create account' : 'Sign in'}</SubmitButton>
       </form>
       <button
         type="button"
@@ -87,6 +101,14 @@ export function AuthScreen() {
       >
         {registering ? 'Already have an account? Sign in' : 'New here? Create an account'}
       </button>
+      <div className="mt-6 space-y-2 border-t border-slate-200 pt-6 dark:border-slate-800">
+        <Button className="w-full py-2.5" onClick={() => void tryDemo()} disabled={busy || demoBusy}>
+          {demoBusy ? 'Creating your demo vault…' : 'Try the demo (no sign-up)'}
+        </Button>
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          Sample data in a throwaway vault, deleted after {DEMO_TTL_HOURS} hours.
+        </p>
+      </div>
     </AuthLayout>
   )
 }

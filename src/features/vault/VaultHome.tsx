@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '../../components/Button'
 import { ThemeToggle } from '../../components/ThemeToggle'
 import { ApiError } from '../../lib/api'
+import { DEMO_PASSPHRASE, DEMO_TTL_HOURS, isDemoEmail } from '../../lib/demo'
 import { useIdleLock } from '../auth/useIdleLock'
 import { useSession } from '../auth/useSession'
 import type { VaultItemPlain } from '../../types'
@@ -77,6 +78,13 @@ export function VaultHome({ email, vaultKey }: { email: string; vaultKey: Crypto
           <Button onClick={() => void logout()}>Sign out</Button>
         </div>
       </header>
+
+      {isDemoEmail(email) && (
+        <p role="note" className="rounded-lg bg-sky-50 p-3 text-sm text-sky-900 dark:bg-sky-950/50 dark:text-sky-200">
+          Demo vault with sample data, deleted automatically after {DEMO_TTL_HOURS} hours. Please don't store real
+          secrets here. Master passphrase: <span className="font-mono">{DEMO_PASSPHRASE}</span>
+        </p>
+      )}
 
       {status === 'loading' && <p className="text-slate-500">Decrypting your vault…</p>}
       {status === 'error' && (
