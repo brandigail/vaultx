@@ -10,9 +10,11 @@
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
+    "db:migrate": "node --env-file=.env.local scripts/migrate.ts",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.2.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
