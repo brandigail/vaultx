@@ -2,7 +2,7 @@
 
 A zero-knowledge secret manager. Everything is encrypted with AES-256-GCM in the browser before it leaves it, so the server and the database only ever hold ciphertext.
 
-**Live demo:** TBD (built and tested locally, not yet deployed)
+**Live demo:** https://vaultx-546.netlify.app
 
 ## What to demo to a recruiter
 - Click **Try the demo vault**: a seeded, encrypted vault opens with no sign-up. Lock it, then unlock it with the demo passphrase to see the key being derived in the browser.
